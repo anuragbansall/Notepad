@@ -93,3 +93,45 @@ main {
   word-wrap: break-word;
   background-color: #fff;
 }
+
+/* Dark mode styles */
+body.dark-mode {
+  background-color: #181a1b;
+  color: #e0e0e0;
+}
+
+body.dark-mode #toolbar {
+  background: linear-gradient(to bottom, #23272a, #181a1b);
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+}
+
+body.dark-mode .toolbar-group button {
+  background-color: #23272a;
+  border: 1.5px solid #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .toolbar-group button:hover {
+  background-color: #333;
+}
+
+body.dark-mode main {
+  background-color: #23272a;
+}
+
+body.dark-mode .editor-container {
+  background-color: #23272a;
+  border: 1px solid #444;
+}
+
+body.dark-mode .line-numbers {
+  background-color: #181a1b;
+  border-right: 1px solid #444;
+  color: #888;
+}
+
+body.dark-mode .editor {
+  background-color: #181a1b;
+  color: #e0e0e0;
+}
