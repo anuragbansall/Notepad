@@ -19,7 +19,7 @@ textArea.addEventListener("scroll", () => {
   lineNumbers.scrollTop = textArea.scrollTop;
 });
 
-window.addEventListener("DOMContentLoaded", updateLineNumbers());
+window.addEventListener("DOMContentLoaded", updateLineNumbers);
 
 // Open file dialog
 openButton.addEventListener("click", () => {
@@ -49,4 +49,25 @@ newButton.addEventListener("click", () => {
   document.title = "Padman - New File";
   updateLineNumbers();
   textArea.focus();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.ctrlKey || event.metaKey) {
+    switch (event.key.toLowerCase()) {
+      case "n": // New file
+        event.preventDefault();
+        newButton.click();
+        break;
+      case "o": // Open file
+        event.preventDefault();
+        openButton.click();
+        break;
+      case "s": // Save file
+        event.preventDefault();
+        saveButton.click();
+        break;
+      default:
+        break;
+    }
+  }
 });
