@@ -1,0 +1,95 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  background-color: #f4f4f4;
+  color: #333;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(to bottom, #dfdfdf, #e2e2e2);
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 2rem;
+  background-color: #ccc;
+  margin: 0 0.5rem;
+}
+
+.toolbar-group button {
+  padding: 0.4rem 0.6rem;
+  background-color: #ffffffb3;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toolbar-group button:hover {
+  background-color: #e0e0e0;
+}
+
+main {
+  flex: 1;
+  background-color: #dfdfdf;
+  padding: 1rem;
+  display: flex;
+}
+
+.editor-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  background-color: white;
+  overflow: hidden;
+}
+
+.line-numbers {
+  width: 50px;
+  padding: 0.5rem;
+  background-color: #f0f0f0;
+  border-right: 1px solid #ccc;
+  font-family: monospace;
+  font-size: 14px;
+  text-align: right;
+  white-space: pre-line;
+  overflow-y: hidden;
+  user-select: none;
+}
+
+.editor {
+  flex: 1;
+  padding: 0.5rem;
+  font-family: monospace;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: #fff;
+}

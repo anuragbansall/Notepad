@@ -1,12 +1,75 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Padman</title>
-</head>
-<body>
-    
-</body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div id="toolbar">
+        <div class="toolbar-group">
+          <button id="new-button">📃 New</button>
+          <button id="open-button">📂 Open</button>
+          <button id="save-button">💾 Save</button>
+        </div>
+
+        <span class="toolbar-separator"></span>
+
+        <div class="toolbar-group">
+          <button id="undo-button">⬅️ Undo</button>
+          <button id="redo-button">➡️ Redo</button>
+        </div>
+
+        <span class="toolbar-separator"></span>
+
+        <div class="toolbar-group">
+          <button id="cut-button">✂️ Cut</button>
+          <button id="copy-button">📋 Copy</button>
+          <button id="paste-button">📥 Paste</button>
+        </div>
+
+        <span class="toolbar-separator"></span>
+
+        <div class="toolbar-group">
+          <button id="find-button">🔍 Find</button>
+          <button id="replace-button">🔄 Replace</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="editor-container">
+        <div id="line-numbers" class="line-numbers">1</div>
+        <textarea
+          id="editor"
+          class="editor"
+          placeholder="Start writing..."
+          spellcheck="false"
+        ></textarea>
+      </div>
+    </main>
+
+    <script>
+      const editor = document.getElementById("editor");
+      const lineNumbers = document.getElementById("line-numbers");
+
+      function updateLineNumbers() {
+        const lines = editor.value.split("\n").length;
+        let lineNumbersText = "";
+        for (let i = 1; i <= lines; i++) {
+          lineNumbersText += i + "\n";
+        }
+        lineNumbers.textContent = lineNumbersText;
+      }
+
+      editor.addEventListener("input", updateLineNumbers);
+      editor.addEventListener("scroll", () => {
+        lineNumbers.scrollTop = editor.scrollTop;
+      });
+
+      window.onload = updateLineNumbers;
+    </script>
+  </body>
 </html>
