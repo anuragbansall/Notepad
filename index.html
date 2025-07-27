@@ -51,25 +51,6 @@
       </div>
     </main>
 
-    <script>
-      const editor = document.getElementById("editor");
-      const lineNumbers = document.getElementById("line-numbers");
-
-      function updateLineNumbers() {
-        const lines = editor.value.split("\n").length;
-        let lineNumbersText = "";
-        for (let i = 1; i <= lines; i++) {
-          lineNumbersText += i + "\n";
-        }
-        lineNumbers.textContent = lineNumbersText;
-      }
-
-      editor.addEventListener("input", updateLineNumbers);
-      editor.addEventListener("scroll", () => {
-        lineNumbers.scrollTop = editor.scrollTop;
-      });
-
-      window.onload = updateLineNumbers;
-    </script>
+    <script src="renderer.js"></script>
   </body>
 </html>
