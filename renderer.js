@@ -7,6 +7,8 @@ const newButton = document.getElementById("new-button");
 const textArea = document.getElementById("editor");
 const lineNumbers = document.getElementById("line-numbers");
 
+const darkModeToggle = document.getElementById("dark-mode-toggle");
+
 function updateLineNumbers() {
   const count = textArea.value.split("\n").length;
   lineNumbers.textContent = Array.from({ length: count }, (_, i) => i + 1).join(
@@ -70,4 +72,29 @@ document.addEventListener("keydown", (event) => {
         break;
     }
   }
+});
+
+// Dark mode toggle logic
+function setDarkMode(enabled) {
+  document.body.classList.toggle("dark-mode", enabled);
+  if (enabled) {
+    darkModeToggle.innerText = "☀️ Light Mode";
+    darkModeToggle.title = "Switch to light mode";
+  } else {
+    darkModeToggle.innerText = "🌙 Dark Mode";
+    darkModeToggle.title = "Switch to dark mode";
+  }
+  localStorage.setItem("padman-dark-mode", enabled ? "1" : "0");
+}
+
+darkModeToggle.addEventListener("click", () => {
+  const enabled = !document.body.classList.contains("dark-mode");
+  setDarkMode(enabled);
+});
+
+// On load, set dark mode from localStorage
+window.addEventListener("DOMContentLoaded", () => {
+  updateLineNumbers();
+  const darkPref = localStorage.getItem("padman-dark-mode") === "1";
+  setDarkMode(darkPref);
 });
