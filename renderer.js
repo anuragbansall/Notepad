@@ -3,6 +3,7 @@ const path = require("path");
 
 const openButton = document.getElementById("open-button");
 const saveButton = document.getElementById("save-button");
+const newButton = document.getElementById("new-button");
 const textArea = document.getElementById("editor");
 const lineNumbers = document.getElementById("line-numbers");
 
@@ -40,4 +41,12 @@ saveButton.addEventListener("click", () => {
 ipcRenderer.on("file-saved", (event, filePath) => {
   document.title = `Padman - ${path.basename(filePath)}`;
   alert(`File saved successfully at ${filePath}`);
+});
+
+// New file functionality
+newButton.addEventListener("click", () => {
+  textArea.value = "";
+  document.title = "Padman - New File";
+  updateLineNumbers();
+  textArea.focus();
 });
