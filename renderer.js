@@ -7,15 +7,22 @@ const el = {
   saveBtn: document.getElementById("save-button"),
   newBtn: document.getElementById("new-button"),
   findBtn: document.getElementById("find-button"),
+  replaceBtn: document.getElementById("replace-button"),
   textArea: document.getElementById("editor"),
   lineNumbers: document.getElementById("line-numbers"),
   darkToggle: document.getElementById("dark-mode-toggle"),
   findDialog: document.getElementById("find-dialog"),
+  dialogTitle: document.getElementById("dialog-title"),
+  toggleReplace: document.getElementById("toggle-replace"),
   findInput: document.getElementById("find-input"),
+  replaceInput: document.getElementById("replace-input"),
+  replaceRow: document.getElementById("replace-row"),
   findNext: document.getElementById("find-next"),
   findPrev: document.getElementById("find-prev"),
   findClose: document.getElementById("close-find"),
   findResults: document.getElementById("find-results"),
+  replaceCurrent: document.getElementById("replace-current"),
+  replaceAll: document.getElementById("replace-all"),
 };
 
 // State
@@ -112,35 +119,126 @@ function updateFindResults() {
   if (!currentMatches.length) {
     el.findResults.textContent = "No results";
     el.findNext.disabled = el.findPrev.disabled = true;
+    el.replaceCurrent.disabled = el.replaceAll.disabled = true;
   } else {
     el.findResults.textContent = `${currentMatchIndex + 1} of ${
       currentMatches.length
     }`;
     el.findNext.disabled = el.findPrev.disabled = false;
+    el.replaceCurrent.disabled = el.replaceAll.disabled = false;
   }
 }
 
-function showFindDialog() {
+function showFindDialog(showReplace = false) {
   el.findDialog.style.display = "block";
+  if (showReplace) {
+    el.replaceRow.style.display = "flex";
+    el.dialogTitle.textContent = "Find & Replace";
+  } else {
+    el.replaceRow.style.display = "none";
+    el.dialogTitle.textContent = "Find";
+  }
   el.findInput.focus();
   el.findInput.select();
 }
 
 function hideFindDialog() {
   el.findDialog.style.display = "none";
+  el.replaceRow.style.display = "none";
+  el.dialogTitle.textContent = "Find";
   currentMatches = [];
   currentMatchIndex = -1;
   el.findResults.textContent = "";
   el.textArea.focus();
 }
 
+function toggleReplaceMode() {
+  const isReplaceVisible = el.replaceRow.style.display === "flex";
+  if (isReplaceVisible) {
+    el.replaceRow.style.display = "none";
+    el.dialogTitle.textContent = "Find";
+  } else {
+    el.replaceRow.style.display = "flex";
+    el.dialogTitle.textContent = "Find & Replace";
+  }
+}
+
+function replaceCurrent() {
+  if (currentMatchIndex === -1 || !currentMatches.length) return;
+
+  const replaceText = el.replaceInput.value;
+  const match = currentMatches[currentMatchIndex];
+  const content = el.textArea.value;
+
+  // Replace the current match
+  const newContent =
+    content.slice(0, match.start) + replaceText + content.slice(match.end);
+  el.textArea.value = newContent;
+
+  // Update cursor position
+  const newCursorPos = match.start + replaceText.length;
+  el.textArea.setSelectionRange(newCursorPos, newCursorPos);
+
+  // Update line numbers
+  updateLineNumbers();
+
+  // Refresh the search to update match positions
+  const searchText = el.findInput.value;
+  if (searchText) {
+    // Reset search state to refresh matches
+    lastSearchText = "";
+    findText(searchText, "next", true);
+  }
+}
+
+function replaceAll() {
+  if (!currentMatches.length) return;
+
+  const searchText = el.findInput.value;
+  const replaceText = el.replaceInput.value;
+
+  if (!searchText) return;
+
+  const content = el.textArea.value;
+  const regex = new RegExp(escapeRegExp(searchText), "gi");
+  const newContent = content.replace(regex, replaceText);
+
+  const replacedCount = currentMatches.length;
+  el.textArea.value = newContent;
+
+  // Update line numbers
+  updateLineNumbers();
+
+  // Clear matches and update UI
+  currentMatches = [];
+  currentMatchIndex = -1;
+  el.findResults.textContent = `Replaced ${replacedCount} occurrence${
+    replacedCount !== 1 ? "s" : ""
+  }`;
+
+  // Disable replace buttons
+  el.replaceCurrent.disabled = true;
+  el.replaceAll.disabled = true;
+
+  el.textArea.focus();
+}
+
 // Find Event Listeners
-el.findBtn.addEventListener("click", showFindDialog);
+el.findBtn.addEventListener("click", () => showFindDialog(false));
+
+// Check if replace button exists before adding listener
+if (el.replaceBtn) {
+  el.replaceBtn.addEventListener("click", () => showFindDialog(true));
+}
+
 el.findClose.addEventListener("click", hideFindDialog);
+el.toggleReplace.addEventListener("click", toggleReplaceMode);
+
 el.findInput.addEventListener("input", (e) => {
   if (e.target.value) findText(e.target.value, "next", false);
   else hideFindDialog();
 });
+
 el.findInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     findText(el.findInput.value, e.shiftKey ? "prev" : "next", true);
@@ -148,6 +246,15 @@ el.findInput.addEventListener("keydown", (e) => {
     hideFindDialog();
   }
 });
+
+el.replaceInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    replaceCurrent();
+  } else if (e.key === "Escape") {
+    hideFindDialog();
+  }
+});
+
 el.findNext.addEventListener("click", () =>
   findText(el.findInput.value, "next", true)
 );
@@ -155,11 +262,15 @@ el.findPrev.addEventListener("click", () =>
   findText(el.findInput.value, "prev", true)
 );
 
+el.replaceCurrent.addEventListener("click", replaceCurrent);
+el.replaceAll.addEventListener("click", replaceAll);
+
 document.addEventListener("click", (e) => {
   if (
     el.findDialog.style.display === "block" &&
     !el.findDialog.contains(e.target) &&
-    e.target !== el.findBtn
+    e.target !== el.findBtn &&
+    e.target !== el.replaceBtn
   ) {
     hideFindDialog();
   }
@@ -175,11 +286,23 @@ document.addEventListener("keydown", (e) => {
 
   if (e.ctrlKey || e.metaKey) {
     const key = e.key.toLowerCase();
-    if (key === "n") el.newBtn.click();
-    else if (key === "o") el.openBtn.click();
-    else if (key === "s") el.saveBtn.click();
-    else if (key === "f") showFindDialog();
-    e.preventDefault();
+    if (key === "n") {
+      e.preventDefault();
+      el.newBtn.click();
+    } else if (key === "o") {
+      e.preventDefault();
+      el.openBtn.click();
+    } else if (key === "s") {
+      e.preventDefault();
+      el.saveBtn.click();
+    } else if (key === "f") {
+      e.preventDefault();
+      showFindDialog(false);
+    } else if (key === "h") {
+      e.preventDefault();
+      showFindDialog(true);
+    }
+    // Don't prevent default for other Ctrl combinations (like Ctrl+A, Ctrl+C, etc.)
   }
 
   if (e.key === "Escape" && el.findDialog.style.display === "block") {
@@ -205,4 +328,10 @@ el.darkToggle.addEventListener("click", () => {
 window.addEventListener("DOMContentLoaded", () => {
   updateLineNumbers();
   setDarkMode(localStorage.getItem("padman-dark-mode") === "1");
+
+  // Debug: Check if replace button exists
+  console.log("Replace button found:", !!el.replaceBtn);
+  if (!el.replaceBtn) {
+    console.error("Replace button not found! Check the HTML ID.");
+  }
 });

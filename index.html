@@ -19,7 +19,7 @@
 
         <div class="toolbar-group">
           <button id="find-button" title="ctrl+f">🔍 Find</button>
-          <button id="replace-button">🔄 Replace</button>
+          <button id="replace-button" title="ctrl+h">🔄 Replace</button>
         </div>
         <span class="toolbar-separator"></span>
         <div class="toolbar-group">
@@ -42,25 +42,66 @@
       </div>
     </main>
 
-    <!-- Find Dialog -->
+    <!-- Find & Replace Dialog -->
     <div id="find-dialog" class="find-dialog" style="display: none">
       <div class="find-content">
         <div class="find-header">
-          <span>Find</span>
-          <button id="close-find" class="close-btn">×</button>
+          <span id="dialog-title">Find</span>
+          <div class="header-buttons">
+            <button
+              id="toggle-replace"
+              class="toggle-btn"
+              title="Toggle Replace"
+            >
+              ⚏
+            </button>
+            <button id="close-find" class="close-btn">×</button>
+          </div>
         </div>
         <div class="find-body">
-          <input
-            type="text"
-            id="find-input"
-            placeholder="Find..."
-            class="find-input"
-          />
-          <div class="find-buttons">
-            <button id="find-prev" class="find-btn" title="Previous (Shift+F3)">
-              ▲
-            </button>
-            <button id="find-next" class="find-btn" title="Next (F3)">▼</button>
+          <div class="input-row">
+            <input
+              type="text"
+              id="find-input"
+              placeholder="Find..."
+              class="find-input"
+            />
+            <div class="find-buttons">
+              <button
+                id="find-prev"
+                class="find-btn"
+                title="Previous (Shift+F3)"
+              >
+                ▲
+              </button>
+              <button id="find-next" class="find-btn" title="Next (F3)">
+                ▼
+              </button>
+            </div>
+          </div>
+          <div id="replace-row" class="input-row" style="display: none">
+            <input
+              type="text"
+              id="replace-input"
+              placeholder="Replace..."
+              class="find-input"
+            />
+            <div class="replace-buttons">
+              <button
+                id="replace-current"
+                class="replace-btn"
+                title="Replace current match"
+              >
+                Replace
+              </button>
+              <button
+                id="replace-all"
+                class="replace-btn"
+                title="Replace all matches"
+              >
+                Replace All
+              </button>
+            </div>
           </div>
         </div>
         <div class="find-info">
