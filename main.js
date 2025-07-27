@@ -37,4 +37,19 @@ ipcMain.on("open-file-dialog", async (event) => {
   }
 });
 
+ipcMain.on("save-file-dialog", async (event, content, title) => {
+  const result = await dialog.showSaveDialog(mainWindow, {
+    defaultPath: title.replace("Padman - ", ""),
+    filters: [
+      { name: "Text Files", extensions: ["txt", "md"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
+  });
+
+  if (!result.canceled && result.filePath) {
+    fs.writeFileSync(result.filePath, content, "utf-8");
+    event.sender.send("file-saved", result.filePath);
+  }
+});
+
 app.whenReady().then(createWindow);
