@@ -135,3 +135,166 @@ body.dark-mode .editor {
   background-color: #181a1b;
   color: #e0e0e0;
 }
+
+/* Find Dialog Styles */
+.find-dialog {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 300px;
+  font-family: Arial, sans-serif;
+}
+
+.find-content {
+  padding: 0;
+}
+
+.find-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+.close-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.find-body {
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.find-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
+
+.find-input:focus {
+  border-color: #007acc;
+  box-shadow: 0 0 0 1px #007acc;
+}
+
+.find-buttons {
+  display: flex;
+  gap: 2px;
+}
+
+.find-btn {
+  padding: 6px 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.find-btn:hover {
+  background-color: #e9ecef;
+}
+
+.find-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.find-info {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #666;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Dark mode find dialog */
+body.dark-mode .find-dialog {
+  background-color: #2d3136;
+  border-color: #444;
+}
+
+body.dark-mode .find-header {
+  background-color: #23272a;
+  border-bottom-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .close-btn {
+  color: #e0e0e0;
+}
+
+body.dark-mode .close-btn:hover {
+  background-color: #444;
+}
+
+body.dark-mode .find-input {
+  background-color: #181a1b;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .find-input:focus {
+  border-color: #007acc;
+}
+
+body.dark-mode .find-btn {
+  background-color: #23272a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .find-btn:hover {
+  background-color: #333;
+}
+
+body.dark-mode .find-info {
+  background-color: #23272a;
+  border-top-color: #444;
+  color: #aaa;
+}
+
+/* Highlight styles for found text */
+.find-highlight {
+  background-color: #ffff00;
+  color: #000;
+}
+
+body.dark-mode .find-highlight {
+  background-color: #ffa500;
+  color: #000;
+}
+
+.find-current {
+  background-color: #ff6600 !important;
+  color: #fff !important;
+}
