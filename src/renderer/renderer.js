@@ -55,7 +55,7 @@ el.textArea.addEventListener("scroll", () => {
 function updateTitle(filePath = null) {
   const fileName = filePath ? path.basename(filePath) : "New File";
   const unsavedIndicator = hasUnsavedChanges ? "• " : "";
-  document.title = `${unsavedIndicator}Notepad - ${fileName}`;
+  document.title = `${unsavedIndicator}Padman - ${fileName}`;
 }
 
 // === File Operations ===
@@ -422,7 +422,7 @@ function setDarkMode(enabled) {
   el.darkToggle.title = enabled
     ? "Switch to light mode"
     : "Switch to dark mode";
-  localStorage.setItem("notepad-dark-mode", enabled ? "1" : "0");
+  localStorage.setItem("padman-dark-mode", enabled ? "1" : "0");
 }
 
 el.darkToggle.addEventListener("click", () => {
@@ -442,10 +442,10 @@ window.addEventListener("beforeunload", (e) => {
 window.addEventListener("DOMContentLoaded", () => {
   updateLineNumbers();
   updateTitle();
-  setDarkMode(localStorage.getItem("notepad-dark-mode") === "1");
+  setDarkMode(localStorage.getItem("padman-dark-mode") === "1");
   el.textArea.focus();
 
   // Debug info
-  console.log("Notepad Text Editor initialized");
+  console.log("Padman Text Editor initialized");
   console.log("Replace button found:", !!el.replaceBtn);
 });

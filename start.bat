@@ -1,5 +1,5 @@
 @echo off
-echo Starting Notepad Text Editor...
+echo Starting Padman Text Editor...
 cd /d "%~dp0"
 npm start
 pause

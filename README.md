@@ -1,4 +1,4 @@
-# Notepad Text Editor
+# Padman Text Editor
 
 A modern, feature-rich text editor built with Electron. This application provides a clean, intuitive interface for text editing with advanced features like find & replace, dark mode, and line numbering.
 

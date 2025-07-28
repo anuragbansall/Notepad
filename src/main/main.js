@@ -59,7 +59,7 @@ ipcMain.on("open-file-dialog", async (event) => {
 
 ipcMain.on("save-file-dialog", async (event, content, title) => {
   const defaultName = title
-    .replace("Notepad - ", "")
+    .replace("Padman - ", "")
     .replace("New File", "untitled.txt");
 
   const result = await dialog.showSaveDialog(mainWindow, {

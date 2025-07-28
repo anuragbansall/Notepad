@@ -1,5 +1,5 @@
 {
-  "name": "notepad-text-editor",
+  "name": "padman-text-editor",
   "version": "1.0.0",
   "description": "A modern, feature-rich text editor built with Electron",
   "main": "src/main/main.js",
@@ -11,7 +11,7 @@
     "dist": "electron-builder --publish=never",
     "clean": "rimraf dist"
   },
-  "keywords": ["text-editor", "notepad", "electron", "editor"],
+  "keywords": ["text-editor", "padman", "electron", "editor"],
   "author": "Your Name",
   "license": "MIT",
   "type": "module",
@@ -21,8 +21,8 @@
     "nodemon": "^3.0.1"
   },
   "build": {
-    "appId": "com.notepad.texteditor",
-    "productName": "Notepad",
+    "appId": "com.padman.texteditor",
+    "productName": "Padman",
     "directories": {
       "output": "dist"
     },
