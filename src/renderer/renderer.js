@@ -29,6 +29,7 @@ const el = {
 let currentMatches = [];
 let currentMatchIndex = -1;
 let lastSearchText = "";
+let hasUnsavedChanges = false;
 
 // === Line Numbering ===
 function updateLineNumbers() {
@@ -39,54 +40,111 @@ function updateLineNumbers() {
   ).join("\n");
 }
 
-el.textArea.addEventListener("input", updateLineNumbers);
+// Track changes for unsaved indicator
+el.textArea.addEventListener("input", () => {
+  updateLineNumbers();
+  hasUnsavedChanges = true;
+  updateTitle();
+});
+
 el.textArea.addEventListener("scroll", () => {
   el.lineNumbers.scrollTop = el.textArea.scrollTop;
 });
 
+// === Title Management ===
+function updateTitle(filePath = null) {
+  const fileName = filePath ? path.basename(filePath) : "New File";
+  const unsavedIndicator = hasUnsavedChanges ? "• " : "";
+  document.title = `${unsavedIndicator}Notepad - ${fileName}`;
+}
+
 // === File Operations ===
-el.openBtn.addEventListener("click", () =>
-  ipcRenderer.send("open-file-dialog")
-);
-el.saveBtn.addEventListener("click", () =>
-  ipcRenderer.send("save-file-dialog", el.textArea.value, document.title)
-);
-el.newBtn.addEventListener("click", () => {
-  let shouldCreateNew = true;
-  if (el.textArea.value !== "") {
-    shouldCreateNew = confirm(
-      "You have unsaved changes. Do you want to create a new file?"
+el.openBtn.addEventListener("click", () => {
+  if (hasUnsavedChanges) {
+    const shouldOpen = confirm(
+      "You have unsaved changes. Do you want to open a new file without saving?"
     );
+    if (!shouldOpen) return;
+  }
+  ipcRenderer.send("open-file-dialog");
+});
+
+el.saveBtn.addEventListener("click", () => {
+  ipcRenderer.send("save-file-dialog", el.textArea.value, document.title);
+});
+
+el.newBtn.addEventListener("click", () => {
+  if (hasUnsavedChanges) {
+    const shouldCreateNew = confirm(
+      "You have unsaved changes. Do you want to create a new file without saving?"
+    );
+    if (!shouldCreateNew) return;
   }
 
-  if (!shouldCreateNew) return;
-
   el.textArea.value = "";
-  document.title = "Padman - New File";
+  hasUnsavedChanges = false;
+  updateTitle();
   updateLineNumbers();
   el.textArea.focus();
 });
 
+// IPC Event Handlers
 ipcRenderer.on("file-opened", (e, { filePath, fileContent }) => {
-  let shouldOpen = true;
-  if (el.textArea.value !== "") {
-    shouldOpen = confirm(
-      "You have unsaved changes. Do you want to open a new file?"
-    );
-  }
-
-  if (!shouldOpen) return;
-
   el.textArea.value = fileContent;
-  document.title = `Padman - ${path.basename(filePath)}`;
+  hasUnsavedChanges = false;
+  updateTitle(filePath);
   updateLineNumbers();
   el.textArea.focus();
 });
 
 ipcRenderer.on("file-saved", (e, filePath) => {
-  document.title = `Padman - ${path.basename(filePath)}`;
-  alert(`File saved successfully at ${filePath}`);
+  hasUnsavedChanges = false;
+  updateTitle(filePath);
+  // Show a brief success message instead of alert
+  showStatusMessage(`File saved: ${path.basename(filePath)}`);
 });
+
+ipcRenderer.on("file-error", (e, { message, error }) => {
+  alert(`${message}: ${error}`);
+});
+
+// === Status Message System ===
+function showStatusMessage(message, duration = 3000) {
+  // Remove existing status message if any
+  const existingMessage = document.getElementById("status-message");
+  if (existingMessage) {
+    existingMessage.remove();
+  }
+
+  const statusDiv = document.createElement("div");
+  statusDiv.id = "status-message";
+  statusDiv.textContent = message;
+  statusDiv.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 1001;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  `;
+
+  document.body.appendChild(statusDiv);
+
+  // Fade in
+  setTimeout(() => (statusDiv.style.opacity = "1"), 10);
+
+  // Fade out and remove
+  setTimeout(() => {
+    statusDiv.style.opacity = "0";
+    setTimeout(() => statusDiv.remove(), 300);
+  }, duration);
+}
 
 // === Find Functionality ===
 function escapeRegExp(str) {
@@ -94,10 +152,18 @@ function escapeRegExp(str) {
 }
 
 function findText(query, dir = "next", jump = true) {
+  if (!query) {
+    currentMatches = [];
+    currentMatchIndex = -1;
+    updateFindResults();
+    return;
+  }
+
   const content = el.textArea.value;
   const regex = new RegExp(escapeRegExp(query), "gi");
   currentMatches = [];
   let match;
+
   while ((match = regex.exec(content))) {
     currentMatches.push({
       start: match.index,
@@ -113,7 +179,8 @@ function findText(query, dir = "next", jump = true) {
 
   if (query !== lastSearchText) {
     const pos = el.textArea.selectionStart;
-    currentMatchIndex = currentMatches.findIndex((m) => m.start >= pos) || 0;
+    currentMatchIndex = currentMatches.findIndex((m) => m.start >= pos);
+    if (currentMatchIndex === -1) currentMatchIndex = 0;
   } else {
     currentMatchIndex =
       dir === "next"
@@ -193,6 +260,10 @@ function replaceCurrent() {
     content.slice(0, match.start) + replaceText + content.slice(match.end);
   el.textArea.value = newContent;
 
+  // Mark as changed
+  hasUnsavedChanges = true;
+  updateTitle();
+
   // Update cursor position
   const newCursorPos = match.start + replaceText.length;
   el.textArea.setSelectionRange(newCursorPos, newCursorPos);
@@ -203,7 +274,6 @@ function replaceCurrent() {
   // Refresh the search to update match positions
   const searchText = el.findInput.value;
   if (searchText) {
-    // Reset search state to refresh matches
     lastSearchText = "";
     findText(searchText, "next", true);
   }
@@ -224,6 +294,10 @@ function replaceAll() {
   const replacedCount = currentMatches.length;
   el.textArea.value = newContent;
 
+  // Mark as changed
+  hasUnsavedChanges = true;
+  updateTitle();
+
   // Update line numbers
   updateLineNumbers();
 
@@ -241,10 +315,9 @@ function replaceAll() {
   el.textArea.focus();
 }
 
-// Find Event Listeners
+// === Event Listeners ===
 el.findBtn.addEventListener("click", () => showFindDialog(false));
 
-// Check if replace button exists before adding listener
 if (el.replaceBtn) {
   el.replaceBtn.addEventListener("click", () => showFindDialog(true));
 }
@@ -253,8 +326,13 @@ el.findClose.addEventListener("click", hideFindDialog);
 el.toggleReplace.addEventListener("click", toggleReplaceMode);
 
 el.findInput.addEventListener("input", (e) => {
-  if (e.target.value) findText(e.target.value, "next", false);
-  else hideFindDialog();
+  if (e.target.value) {
+    findText(e.target.value, "next", false);
+  } else {
+    currentMatches = [];
+    currentMatchIndex = -1;
+    updateFindResults();
+  }
 });
 
 el.findInput.addEventListener("keydown", (e) => {
@@ -283,6 +361,7 @@ el.findPrev.addEventListener("click", () =>
 el.replaceCurrent.addEventListener("click", replaceCurrent);
 el.replaceAll.addEventListener("click", replaceAll);
 
+// Close dialog when clicking outside
 document.addEventListener("click", (e) => {
   if (
     el.findDialog.style.display === "block" &&
@@ -296,33 +375,41 @@ document.addEventListener("click", (e) => {
 
 // === Keyboard Shortcuts ===
 document.addEventListener("keydown", (e) => {
+  // Find dialog shortcuts
   if (el.findDialog.style.display === "block" && e.key === "F3") {
     findText(el.findInput.value, e.shiftKey ? "prev" : "next", true);
     e.preventDefault();
     return;
   }
 
+  // Global shortcuts
   if (e.ctrlKey || e.metaKey) {
     const key = e.key.toLowerCase();
-    if (key === "n") {
-      e.preventDefault();
-      el.newBtn.click();
-    } else if (key === "o") {
-      e.preventDefault();
-      el.openBtn.click();
-    } else if (key === "s") {
-      e.preventDefault();
-      el.saveBtn.click();
-    } else if (key === "f") {
-      e.preventDefault();
-      showFindDialog(false);
-    } else if (key === "h") {
-      e.preventDefault();
-      showFindDialog(true);
+    switch (key) {
+      case "n":
+        e.preventDefault();
+        el.newBtn.click();
+        break;
+      case "o":
+        e.preventDefault();
+        el.openBtn.click();
+        break;
+      case "s":
+        e.preventDefault();
+        el.saveBtn.click();
+        break;
+      case "f":
+        e.preventDefault();
+        showFindDialog(false);
+        break;
+      case "h":
+        e.preventDefault();
+        showFindDialog(true);
+        break;
     }
-    // Don't prevent default for other Ctrl combinations (like Ctrl+A, Ctrl+C, etc.)
   }
 
+  // ESC to close find dialog
   if (e.key === "Escape" && el.findDialog.style.display === "block") {
     hideFindDialog();
   }
@@ -335,21 +422,30 @@ function setDarkMode(enabled) {
   el.darkToggle.title = enabled
     ? "Switch to light mode"
     : "Switch to dark mode";
-  localStorage.setItem("padman-dark-mode", enabled ? "1" : "0");
+  localStorage.setItem("notepad-dark-mode", enabled ? "1" : "0");
 }
 
 el.darkToggle.addEventListener("click", () => {
   setDarkMode(!document.body.classList.contains("dark-mode"));
 });
 
-// === Init on Load ===
+// === Window Events ===
+window.addEventListener("beforeunload", (e) => {
+  if (hasUnsavedChanges) {
+    e.preventDefault();
+    e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+    return e.returnValue;
+  }
+});
+
+// === Initialization ===
 window.addEventListener("DOMContentLoaded", () => {
   updateLineNumbers();
-  setDarkMode(localStorage.getItem("padman-dark-mode") === "1");
+  updateTitle();
+  setDarkMode(localStorage.getItem("notepad-dark-mode") === "1");
+  el.textArea.focus();
 
-  // Debug: Check if replace button exists
+  // Debug info
+  console.log("Notepad Text Editor initialized");
   console.log("Replace button found:", !!el.replaceBtn);
-  if (!el.replaceBtn) {
-    console.error("Replace button not found! Check the HTML ID.");
-  }
 });

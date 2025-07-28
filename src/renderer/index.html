@@ -3,25 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Padman</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Notepad</title>
+    <link rel="stylesheet" href="styles/style.css" />
   </head>
   <body>
     <header>
       <div id="toolbar">
         <div class="toolbar-group">
-          <button id="new-button" title="ctrl+n">📃 New</button>
-          <button id="open-button" title="ctrl+o">📂 Open</button>
-          <button id="save-button" title="ctrl+s">💾 Save</button>
+          <button id="new-button" title="Ctrl+N">📃 New</button>
+          <button id="open-button" title="Ctrl+O">📂 Open</button>
+          <button id="save-button" title="Ctrl+S">💾 Save</button>
         </div>
 
         <span class="toolbar-separator"></span>
 
         <div class="toolbar-group">
-          <button id="find-button" title="ctrl+f">🔍 Find</button>
-          <button id="replace-button" title="ctrl+h">🔄 Replace</button>
+          <button id="find-button" title="Ctrl+F">🔍 Find</button>
+          <button id="replace-button" title="Ctrl+H">🔄 Replace</button>
         </div>
+
         <span class="toolbar-separator"></span>
+
         <div class="toolbar-group">
           <button id="dark-mode-toggle" title="Toggle dark mode">
             🌙 Dark Mode
@@ -53,18 +55,19 @@
               class="toggle-btn"
               title="Toggle Replace"
             >
-              ⚏
+              ⇅
             </button>
-            <button id="close-find" class="close-btn">×</button>
+            <button id="close-find" class="close-btn" title="Close">×</button>
           </div>
         </div>
+
         <div class="find-body">
           <div class="input-row">
             <input
               type="text"
               id="find-input"
-              placeholder="Find..."
               class="find-input"
+              placeholder="Find..."
             />
             <div class="find-buttons">
               <button
@@ -72,41 +75,29 @@
                 class="find-btn"
                 title="Previous (Shift+F3)"
               >
-                ▲
+                ↑
               </button>
               <button id="find-next" class="find-btn" title="Next (F3)">
-                ▼
+                ↓
               </button>
             </div>
           </div>
+
           <div id="replace-row" class="input-row" style="display: none">
             <input
               type="text"
               id="replace-input"
-              placeholder="Replace..."
               class="find-input"
+              placeholder="Replace with..."
             />
             <div class="replace-buttons">
-              <button
-                id="replace-current"
-                class="replace-btn"
-                title="Replace current match"
-              >
-                Replace
-              </button>
-              <button
-                id="replace-all"
-                class="replace-btn"
-                title="Replace all matches"
-              >
-                Replace All
-              </button>
+              <button id="replace-current" class="replace-btn">Replace</button>
+              <button id="replace-all" class="replace-btn">All</button>
             </div>
           </div>
         </div>
-        <div class="find-info">
-          <span id="find-results"></span>
-        </div>
+
+        <div id="find-results" class="find-info"></div>
       </div>
     </div>
 

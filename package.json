@@ -1,29 +1,46 @@
 {
-  "name": "Notepad",
+  "name": "notepad-text-editor",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "A modern, feature-rich text editor built with Electron",
+  "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
+    "dev": "electron . --dev",
     "watch": "nodemon --exec npx electron .",
-    "dist": "electron-builder"
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never",
+    "clean": "rimraf dist"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["text-editor", "notepad", "electron", "editor"],
+  "author": "Your Name",
+  "license": "MIT",
   "type": "module",
   "devDependencies": {
     "electron": "^37.2.4",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "nodemon": "^3.0.1"
   },
   "build": {
-    "appId": "com.Notepad.editor",
+    "appId": "com.notepad.texteditor",
     "productName": "Notepad",
+    "directories": {
+      "output": "dist"
+    },
     "files": [
-      "**/*"
+      "src/**/*",
+      "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "src/assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "src/assets/icon.png"
     }
   }
 }
