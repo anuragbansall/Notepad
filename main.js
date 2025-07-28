@@ -39,7 +39,7 @@ ipcMain.on("open-file-dialog", async (event) => {
 
 ipcMain.on("save-file-dialog", async (event, content, title) => {
   const result = await dialog.showSaveDialog(mainWindow, {
-    defaultPath: title.replace("Padman - ", ""),
+    defaultPath: title.replace("Notepad - ", ""),
     filters: [
       { name: "Text Files", extensions: ["txt", "md"] },
       { name: "All Files", extensions: ["*"] },

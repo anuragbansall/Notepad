@@ -53,20 +53,20 @@ el.saveBtn.addEventListener("click", () =>
 );
 el.newBtn.addEventListener("click", () => {
   el.textArea.value = "";
-  document.title = "Padman - New File";
+  document.title = "Notepad - New File";
   updateLineNumbers();
   el.textArea.focus();
 });
 
 ipcRenderer.on("file-opened", (e, { filePath, fileContent }) => {
   el.textArea.value = fileContent;
-  document.title = `Padman - ${path.basename(filePath)}`;
+  document.title = `Notepad - ${path.basename(filePath)}`;
   updateLineNumbers();
   el.textArea.focus();
 });
 
 ipcRenderer.on("file-saved", (e, filePath) => {
-  document.title = `Padman - ${path.basename(filePath)}`;
+  document.title = `Notepad - ${path.basename(filePath)}`;
   alert(`File saved successfully at ${filePath}`);
 });
 
@@ -317,7 +317,7 @@ function setDarkMode(enabled) {
   el.darkToggle.title = enabled
     ? "Switch to light mode"
     : "Switch to dark mode";
-  localStorage.setItem("padman-dark-mode", enabled ? "1" : "0");
+  localStorage.setItem("Notepad-dark-mode", enabled ? "1" : "0");
 }
 
 el.darkToggle.addEventListener("click", () => {
@@ -327,7 +327,7 @@ el.darkToggle.addEventListener("click", () => {
 // === Init on Load ===
 window.addEventListener("DOMContentLoaded", () => {
   updateLineNumbers();
-  setDarkMode(localStorage.getItem("padman-dark-mode") === "1");
+  setDarkMode(localStorage.getItem("Notepad-dark-mode") === "1");
 
   // Debug: Check if replace button exists
   console.log("Replace button found:", !!el.replaceBtn);

@@ -1,5 +1,5 @@
 {
-  "name": "padman",
+  "name": "Notepad",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -17,8 +17,8 @@
     "electron-builder": "^26.0.12"
   },
   "build": {
-    "appId": "com.padman.editor",
-    "productName": "Padman",
+    "appId": "com.Notepad.editor",
+    "productName": "Notepad",
     "files": [
       "**/*"
     ],
