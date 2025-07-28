@@ -52,6 +52,15 @@ el.saveBtn.addEventListener("click", () =>
   ipcRenderer.send("save-file-dialog", el.textArea.value, document.title)
 );
 el.newBtn.addEventListener("click", () => {
+  let shouldCreateNew = true;
+  if (el.textArea.value !== "") {
+    shouldCreateNew = confirm(
+      "You have unsaved changes. Do you want to create a new file?"
+    );
+  }
+
+  if (!shouldCreateNew) return;
+
   el.textArea.value = "";
   document.title = "Padman - New File";
   updateLineNumbers();
@@ -59,6 +68,15 @@ el.newBtn.addEventListener("click", () => {
 });
 
 ipcRenderer.on("file-opened", (e, { filePath, fileContent }) => {
+  let shouldOpen = true;
+  if (el.textArea.value !== "") {
+    shouldOpen = confirm(
+      "You have unsaved changes. Do you want to open a new file?"
+    );
+  }
+
+  if (!shouldOpen) return;
+
   el.textArea.value = fileContent;
   document.title = `Padman - ${path.basename(filePath)}`;
   updateLineNumbers();
